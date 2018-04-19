@@ -1,17 +1,25 @@
 # -*- coding: utf-8 -*-
+'''
+NLU assignment 3
+author: Rishi Hazra
+'''
 import numpy as np
 import random
 import sklearn_crfsuite
 import nltk
-#import sklearn
-#import scipy
-#import scipy.stats
 import gensim
-# In[]
 with open('ner.txt') as f:
     content = f.readlines()
 
-
+train_data =[]
+train_label =[]
+valid_data = []
+valid_label = []
+test_data = []
+test_label =[]
+train_cluster = []
+valid_cluster= []
+test_cluster = []
 data = []
 data1 = []
 sent = []
@@ -33,13 +41,8 @@ for content_data in content:
         label_sent = []
         num_sent = num_sent + 1
 
-# In[]
 
 model = gensim.models.Word2Vec(data1,min_count=1,size = 50)
-## for correlating words
-# Label has 3 classes, so 
-# In[]
-
 K = 3
 from sklearn.cluster import KMeans
 embeddings = model[model.wv.vocab]
@@ -52,10 +55,7 @@ for i in range(len(data1)):
     sent = model[data1[i]]
     assigned_cluster.append(kmeans.predict(sent))
 
-
-
-# In[]
-
+    
 def word2features(sent, cluster_sent,i):
     word = sent[i][0]
     postag = sent[i][1]
@@ -101,30 +101,18 @@ def word2features(sent, cluster_sent,i):
 
     return features
 
-# In[]
 def sent2features(sent,cluster_data):
     return [word2features(sent,cluster_data, i) for i in range(len(sent))]
 
 
 
-# In[]
 num_train = int(np.floor(num_sent*0.7))
 num_valid = int(np.floor(num_sent*0.1))
 num_test = num_sent - num_train - num_valid
 
 idx = list(range(num_sent))
 random.shuffle(idx)
-# In[]
 
-train_data =[]
-train_label =[]
-valid_data = []
-valid_label = []
-test_data = []
-test_label =[]
-train_cluster = []
-valid_cluster= []
-test_cluster = []
 
 for i in range(0,num_train):
     train_data.append(data[idx[i]])
@@ -142,42 +130,21 @@ for i in range(num_train+num_valid,num_train+num_valid+num_test):
     test_cluster.append(assigned_cluster[idx[i]])
 
 
-# In[]
-#X_train = [sent2features(s,c) for s in train_data and c in train_cluster]
 X_train = []
 for i in range(len(train_data)):
     X_train.append(sent2features(train_data[i],train_cluster[i]))
 
 Y_train = train_label
 
-# In[]
-
 X_test = []
 for i in range(len(test_data)):
     X_test.append(sent2features(test_data[i],test_cluster[i]))
 
 Y_test = test_label
-# In[]
-##time
-crf = sklearn_crfsuite.CRF(
-    algorithm='lbfgs',
-    c1=0.1,
-    c2=0.1,
-    max_iterations=100,
-    all_possible_transitions=True
-)
+crf = sklearn_crfsuite.CRF(algorithm='lbfgs',c1=0.1,c2=0.1,max_iterations=100,all_possible_transitions=True)
 crf.fit(X_train, Y_train)
-
-# In[]
 Y_pred = crf.predict(X_test)
-
-
-# In[]
 from sklearn.metrics import classification_report
-
-
-# In[]
-# convert["O","D","T"] to [0,1,2]
 
 dicts = {"O":0,"D":1,"T":2}
 
