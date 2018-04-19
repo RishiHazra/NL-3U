@@ -1,2 +1,2 @@
-# NL-3U
+# NLU-3
 NLU assignment 3
