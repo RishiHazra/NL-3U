@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Apr  7 22:24:29 2018
-
-@author: sonu
-"""
 
 f2=open('valid.txt','a')
 f3=open('train.txt','a')
