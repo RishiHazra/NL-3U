@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr 18 21:06:57 2018
-
-@author: sonu
+NLU assignment 3
+@author: Rishi
 """
-
 import keras
+import numpy as np
 
-
-##make word to integer encoding
 word_Encoding={}
 dict_key=0 
 x_train_sent =[]
@@ -84,7 +81,6 @@ f.close()
 
 word_Encoding['unk'] = 11311
 
-##convert test sent to integers
 y_train_sent += y_valid_sent
 x_train_sent += x_valid_sent
 
@@ -103,28 +99,15 @@ for i in range(len(y_test_sent)):
         y_test_sent[i][j] = dict_label[y_test_sent[i][j]]
         x_test_sent[i][j] = word_Encoding[x_test_sent[i][j]]
 
-
-
-import numpy as np
-from keras.preprocessing.sequence import pad_sequences
 x_train_pad = pad_sequences(maxlen=110, sequences=x_train_sent, padding="post", value=11311)
 x_test_pad = pad_sequences(maxlen=110, sequences=x_test_sent, padding="post", value=11311)
 y_train_pad = pad_sequences(maxlen=110, sequences=y_train_sent, padding="post", value=0)
 y_test_pad=pad_sequences(maxlen=110, sequences=y_test_sent, padding="post", value=0)
 
-
-
-from keras.utils import to_categorical
 y_train_cat=[to_categorical(i, num_classes=3) for i in y_train_pad]
 y_test_cat = [to_categorical(i, num_classes=3) for i in y_test_pad]
 
 
-
-##mdify
-from keras.models import Model, Input
-from keras.layers import LSTM, Embedding, Dense, Bidirectional
-
-from keras_contrib.layers import CRF
 
 input = Input(shape=(110,))
 model = Embedding(input_dim=len(word_Encoding), output_dim=100,
@@ -158,11 +141,6 @@ for line in f:
             tag_Sent =[]
 f.close()
 
-
-
-
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import precision_recall_fscore_support
 confusion_sent=[]
 prec_sent =[]
 f=open('resNER.txt','w')
@@ -187,7 +165,8 @@ for j in range(len(x_test_copy)):
     confusion_sent.append(confusion_matrix(pred_value, conf_arg, labels=['O','D','T']))
     prec_sent.append(precision_recall_fscore_support(pred_value,conf_arg, average='micro'))
 
-
+# print confusion matrix
+'''
 confusion_sum=np.sum(confusion_sent,axis=0)
 print(confusion_sum)
 recall_disease=confusion_sum[1,1]/np.sum(confusion_sum[:,1])
@@ -198,3 +177,4 @@ recall_T=confusion_sum[2,2]/np.sum(confusion_sum[:,2])
 print('recall_T',recall_T)
 precision_T=confusion_sum[2,2]/np.sum(confusion_sum[2,:])
 print('precision_T',precision_T)
+'''
