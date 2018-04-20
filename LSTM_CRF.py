@@ -5,6 +5,13 @@ NLU assignment 3
 """
 import keras
 import numpy as np
+from keras.preprocessing.sequence import pad_sequences
+from keras.utils import to_categorical
+from keras.models import Model, Input
+from keras.layers import LSTM, Embedding, Dense, Bidirectional
+from keras_contrib.layers import CRF
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import precision_recall_fscore_support
 
 word_Encoding={}
 dict_key=0 
@@ -122,7 +129,7 @@ model = Model(input, out)
 model.compile(optimizer="rmsprop", loss=crf.loss_function, metrics=[crf.accuracy])
 
 model.summary()
-history = model.fit(x_train_pad, np.array(y_train_cat), batch_size=25, epochs=7,validation_split=0.05, verbose=1)
+history = model.fit(x_train_pad, np.array(y_train_cat), batch_size=25, epochs=5,validation_split=0.05, verbose=1)
 
 y_test_sent2=[]
 f= open('test.txt','r')
